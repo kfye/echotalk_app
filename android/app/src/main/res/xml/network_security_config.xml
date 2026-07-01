@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 仅对测试服务器放行明文 HTTP；其余所有域名仍强制走 HTTPS，安全 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Android 模拟器访问宿主机 localhost 的专用别名 -->
+        <domain includeSubdomains="false">10.0.2.2</domain>
+        <!-- 真机联调时，把你电脑的局域网 IP 或测试服 IP 加一行进来： -->
+        <!-- <domain includeSubdomains="false">192.168.1.100</domain> -->
+    </domain-config>
+</network-security-config>
