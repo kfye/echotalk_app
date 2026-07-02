@@ -37,7 +37,12 @@ dependencies:
   flutter_riverpod: ^3.3.2
   dio: ^5.10.0
   go_router: ^17.3.0
-  flutter_secure_storage: ^10.3.1
+  flutter_secure_storage: ^9.2.4
+
+# 钉住 path_provider_android 在迁移 jni（需 Android NDK）之前的 2.2.x，
+# 避免拉入 jni/jni_flutter 触发 NDK 大包下载（国内源被卡）。
+dependency_overrides:
+  path_provider_android: ">=2.2.0 <2.3.0"
 
 dev_dependencies:
   flutter_test:

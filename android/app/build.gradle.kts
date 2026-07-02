@@ -8,7 +8,9 @@ plugins {
 android {
     namespace = "com.echotalk.echotalk_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // 无任何原生(C/C++)插件，无需 NDK。显式设 ndkVersion 会让 AGP 在配置期强制
+    // 下载该 NDK（国内源被卡），故移除。若将来引入需要 NDK 的插件再恢复。
+    // ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
