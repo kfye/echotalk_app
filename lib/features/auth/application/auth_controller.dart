@@ -60,21 +60,21 @@ class AuthController extends Notifier<AuthState> {
   }
 
   /// 登录 → 存 pair（repo 内完成）→ 拉 profile → 已登录。异常上抛给页面提示。
-  Future<void> login(String email, String password) async {
-    await _repo.login(email, password);
+  Future<void> login(String phone, String password) async {
+    await _repo.login(phone, password);
     final profile = await _repo.profile();
     state = AuthAuthenticated(profile);
   }
 
   /// 注册 → 复用 login 自动登录。异常上抛给页面提示。
   Future<void> register(
-    String email,
+    String phone,
     String password, {
     String? nickname,
     required String code,
   }) async {
-    await _repo.register(email, password, nickname: nickname, code: code);
-    await login(email, password);
+    await _repo.register(phone, password, nickname: nickname, code: code);
+    await login(phone, password);
   }
 
   /// best-effort 登出（repo 内已保证清本地 token）→ 未登录。

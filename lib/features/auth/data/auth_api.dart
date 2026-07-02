@@ -15,18 +15,18 @@ class AuthApi {
 
   final Dio _dio;
 
-  Future<TokenPair> login(String email, String password) {
+  Future<TokenPair> login(String phone, String password) {
     return _guard(() async {
       final resp = await _dio.post<dynamic>(
         '/user/login',
-        data: {'email': email, 'password': password},
+        data: {'phone': phone, 'password': password},
       );
       return TokenPair.fromJson(resp.data as Map<String, dynamic>);
     });
   }
 
   Future<User> register(
-    String email,
+    String phone,
     String password, {
     String? nickname,
     required String code,
@@ -35,7 +35,7 @@ class AuthApi {
       final resp = await _dio.post<dynamic>(
         '/user/register',
         data: {
-          'email': email,
+          'phone': phone,
           'password': password,
           'code': code,
           if (nickname != null && nickname.isNotEmpty) 'nickname': nickname,
@@ -62,9 +62,9 @@ class AuthApi {
     });
   }
 
-  Future<void> sendCode(String email) {
+  Future<void> sendCode(String phone) {
     return _guard(() async {
-      await _dio.post<dynamic>('/user/send-code', data: {'email': email});
+      await _dio.post<dynamic>('/user/send-code', data: {'phone': phone});
     });
   }
 

@@ -15,8 +15,8 @@ class AuthRepository {
   final TokenStorage _storage;
 
   /// 登录成功即持久化 token（领域模型 ↔ 字符串的映射点）。
-  Future<void> login(String email, String password) async {
-    final TokenPair pair = await _api.login(email, password);
+  Future<void> login(String phone, String password) async {
+    final TokenPair pair = await _api.login(phone, password);
     await _storage.save(
       access: pair.accessToken,
       refresh: pair.refreshToken,
@@ -25,15 +25,15 @@ class AuthRepository {
 
   /// 仅注册（不自动登录）；"注册后自动登录"由 controller 编排 register→login。
   Future<User> register(
-    String email,
+    String phone,
     String password, {
     String? nickname,
     required String code,
   }) {
-    return _api.register(email, password, nickname: nickname, code: code);
+    return _api.register(phone, password, nickname: nickname, code: code);
   }
 
-  Future<void> sendCode(String email) => _api.sendCode(email);
+  Future<void> sendCode(String phone) => _api.sendCode(phone);
 
   Future<UserProfile> profile() => _api.profile();
 
