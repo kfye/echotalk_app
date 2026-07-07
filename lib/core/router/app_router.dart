@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/application/auth_controller.dart';
-import '../../features/auth/presentation/home_page.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/register_page.dart';
 import '../../features/auth/presentation/splash_page.dart';
+import '../../features/content/presentation/video_play_page.dart';
+import '../../features/shell/presentation/main_shell_page.dart';
 import 'routes.dart';
 
 /// 应用路由。redirect 依据 [AuthState] 做守卫；auth 状态变化经 ValueNotifier
@@ -54,7 +55,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) => const HomePage(),
+        builder: (context, state) => const MainShellPage(),
+      ),
+      GoRoute(
+        path: '${AppRoutes.video}/:id',
+        builder: (context, state) => VideoPlayPage(
+          videoId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0,
+        ),
       ),
     ],
   );
