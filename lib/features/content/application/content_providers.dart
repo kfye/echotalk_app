@@ -43,7 +43,11 @@ final videoListProvider =
 );
 
 /// 单个内容详情（供播放页）。
+///
+/// `keepAlive`：加载过即缓存在内存，重进同一视频播放页秒开、不再请求。
+/// 注意：`locked` 依赖会员态，Day 11 购买后需 `ref.invalidate(videoDetailProvider(id))` 刷新。
 final videoDetailProvider = FutureProvider.family<VideoDetail, int>((ref, id) {
+  ref.keepAlive();
   return ref.watch(contentRepositoryProvider).getVideo(id);
 });
 

@@ -40,6 +40,11 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   video_player: ^2.11.1
   flutter_svg: ^2.3.0
+  # 字幕磁盘缓存目录（android 实现钉在 <2.3.0，见下方 overrides 规避 NDK）。
+  path_provider: ^2.1.4
+  # 影子跟读录音（16K/16bit/单声道 WAV）与录音回放。
+  record: ^6.0.0
+  just_audio: ^0.9.42
 
 # 钉住 path_provider_android 在迁移 jni（需 Android NDK）之前的 2.2.x，
 # 避免拉入 jni/jni_flutter 触发 NDK 大包下载（国内源被卡）。

@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 联网权限：debug 构建 Flutter 会自动注入，release/内测出包(蒲公英)需显式声明 -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 影子跟读录音：录制跟读音频上传后端评测 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application
         android:label="echotalk_app"
         android:name="${applicationName}"

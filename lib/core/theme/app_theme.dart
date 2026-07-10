@@ -155,16 +155,6 @@ class AppTypography {
     height: 1.4,
     color: AppColors.textMuted,
   );
-
-  /// 音标专用：主色显示，和正文区分。若 IPA 符号显示异常，
-  /// 把 fontFamily 换成 'Noto Sans' 或引入 'Charis SIL'。
-  static const TextStyle phonetic = TextStyle(
-    fontFamily: 'Noto Sans',
-    fontFamilyFallback: fallback,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColors.primary,
-  );
 }
 
 // ============================================================
