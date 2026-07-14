@@ -5,30 +5,55 @@ import 'package:go_router/go_router.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/router/routes.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../words/presentation/words_home_page.dart';
 import '../application/content_providers.dart';
 import 'widgets/video_card.dart';
 
-/// 首页·跟读（1a）：训练模式 tab + 分类 chips + 双列内容网格。
-class ContentListPage extends ConsumerWidget {
+/// 首页（1a/1c）：顶部训练模式 tab 切换 body。
+/// 「跟读」= 分类 chips + 双列内容网格；「单词」= 单词模块列表；其余暂「敬请期待」。
+class ContentListPage extends ConsumerStatefulWidget {
   const ContentListPage({super.key});
 
+  @override
+  ConsumerState<ContentListPage> createState() => _ContentListPageState();
+}
+
+class _ContentListPageState extends ConsumerState<ContentListPage> {
   static const _modes = ['发音', '跟读', '单词', '语句', '听力'];
 
+  /// 当前模式（可切换的仅「跟读」「单词」）。
+  String _mode = '跟读';
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _header(context),
-            _categoryChips(ref),
-            const SizedBox(height: AppSpacing.sm),
-            Expanded(child: _grid(context, ref)),
+            Expanded(child: _body()),
           ],
         ),
       ),
     );
+  }
+
+  Widget _body() {
+    switch (_mode) {
+      case '单词':
+        return const WordsHomeView();
+      case '跟读':
+      default:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _categoryChips(ref),
+            const SizedBox(height: AppSpacing.sm),
+            Expanded(child: _grid(context, ref)),
+          ],
+        );
+    }
   }
 
   Widget _header(BuildContext context) {
@@ -63,9 +88,15 @@ class ContentListPage extends ConsumerWidget {
   }
 
   Widget _modeTab(BuildContext context, String mode) {
-    final active = mode == '跟读';
+    final active = mode == _mode;
+    // 目前仅「跟读」「单词」有内容，其余仍提示「敬请期待」。
+    const switchable = {'跟读', '单词'};
     return GestureDetector(
-      onTap: active ? null : () => _soon(context),
+      onTap: active
+          ? null
+          : switchable.contains(mode)
+              ? () => setState(() => _mode = mode)
+              : () => _soon(context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: Column(

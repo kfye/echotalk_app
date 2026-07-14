@@ -10,4 +10,7 @@ class AppRoutes {
 
   /// 播放页基址，实际路由为 `/video/:id`。
   static const video = '/video';
+
+  /// 高频3000单词·口语速练页。
+  static const wordPractice = '/words/practice';
 }

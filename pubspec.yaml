@@ -45,6 +45,10 @@ dependencies:
   # 影子跟读录音（16K/16bit/单声道 WAV）与录音回放。
   record: ^6.0.0
   just_audio: ^0.9.42
+  # 单词收藏本地持久化（key-value，无 NDK 依赖）。
+  shared_preferences: ^2.3.2
+  # 例句发音：设备系统 TTS（有道 dictvoice 只能合成单词，句子走这个）。
+  flutter_tts: ^4.2.0
 
 # 钉住 path_provider_android 在迁移 jni（需 Android NDK）之前的 2.2.x，
 # 避免拉入 jni/jni_flutter 触发 NDK 大包下载（国内源被卡）。
@@ -77,6 +81,7 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/data/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

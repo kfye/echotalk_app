@@ -8,6 +8,7 @@ import '../../features/auth/presentation/register_page.dart';
 import '../../features/auth/presentation/splash_page.dart';
 import '../../features/content/presentation/video_play_page.dart';
 import '../../features/shell/presentation/main_shell_page.dart';
+import '../../features/words/presentation/word_practice_page.dart';
 import 'routes.dart';
 
 /// 应用路由。redirect 依据 [AuthState] 做守卫；auth 状态变化经 ValueNotifier
@@ -62,6 +63,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => VideoPlayPage(
           videoId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0,
         ),
+      ),
+      GoRoute(
+        path: AppRoutes.wordPractice,
+        builder: (context, state) => const WordPracticePage(),
       ),
     ],
   );
