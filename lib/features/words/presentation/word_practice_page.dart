@@ -26,6 +26,10 @@ class _WordPracticePageState extends ConsumerState<WordPracticePage> {
   bool _playing = false;
   bool _recording = false;
 
+  /// 最近一次跟读录音路径，及其所属单词（切词后失效，避免回放到别的词）。
+  String? _recordPath;
+  String? _recordWord;
+
   final PageController _pageController = PageController();
   final GlobalKey _speedKey = GlobalKey();
 
@@ -111,7 +115,10 @@ class _WordPracticePageState extends ConsumerState<WordPracticePage> {
     return PageView.builder(
       controller: _pageController,
       itemCount: s.workingList.length,
-      onPageChanged: (i) => _ctrl.setIndex(i),
+      onPageChanged: (i) {
+        _discardRecordingOnLeave();
+        _ctrl.setIndex(i);
+      },
       itemBuilder: (context, i) {
         final word = s.workingList[i];
         final isCurrent = i == s.index;
@@ -125,11 +132,13 @@ class _WordPracticePageState extends ConsumerState<WordPracticePage> {
             revealed: isCurrent && s.revealed,
             isFavorite: s.favorites.contains(word.w),
             isRecording: isCurrent && _recording,
+            hasRecording: isCurrent && _recordPath != null && _recordWord == word.w,
             onReveal: _ctrl.reveal,
             onToggleAccent: _ctrl.setAccent,
             onPlayAccent: _playAccent,
             onToggleFavorite: _ctrl.toggleFavorite,
             onToggleRecord: _toggleRecord,
+            onPlayback: _playRecording,
           ),
         );
       },
@@ -529,17 +538,19 @@ class _WordPracticePageState extends ConsumerState<WordPracticePage> {
     }
   }
 
-  /// 跟读：点一次开始录音（16K/16bit/单声道 WAV），再点停止并自动回放，供自对比。
-  /// 单词级评测后端暂无对应端点（/training/evaluate 面向视频句），故先做「录音+回放」。
+  /// 跟读：点「跟读」开始录音（16K/16bit/单声道 WAV），再点停止并保存；用「播放跟读」回放。
+  /// 单词级评测后端暂无对应端点（/training/evaluate 面向视频句），故当前只做「录音+回放」。
   Future<void> _toggleRecord() async {
     final recorder = ref.read(recorderServiceProvider);
+    final word = ref.read(wordPracticeProvider).value?.current;
     if (_recording) {
       final path = await recorder.stop();
       if (!mounted) return;
-      setState(() => _recording = false);
-      if (path != null) {
-        await ref.read(clipPlayerProvider).playFile(path).catchError((_) {});
-      }
+      setState(() {
+        _recording = false;
+        _recordPath = path;
+        _recordWord = word?.w;
+      });
       return;
     }
     if (!await recorder.hasPermission()) {
@@ -555,6 +566,27 @@ class _WordPracticePageState extends ConsumerState<WordPracticePage> {
     await recorder.start(path);
     if (!mounted) return;
     setState(() => _recording = true);
+  }
+
+  /// 回放已录的跟读。
+  Future<void> _playRecording() async {
+    final path = _recordPath;
+    if (path == null) return;
+    await ref.read(clipPlayerProvider).playFile(path).catchError((_) {});
+  }
+
+  /// 切词时丢弃当前录音：录音中则停止，并清掉可回放状态。
+  void _discardRecordingOnLeave() {
+    if (_recording) {
+      ref.read(recorderServiceProvider).stop().catchError((_) => null);
+    }
+    if (_recording || _recordPath != null) {
+      setState(() {
+        _recording = false;
+        _recordPath = null;
+        _recordWord = null;
+      });
+    }
   }
 
   /// 点音标喇叭：切到该口音并试听单词发音（尽力而为，不阻塞播放态）。

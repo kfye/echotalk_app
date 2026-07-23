@@ -14,11 +14,13 @@ class WordCard extends StatelessWidget {
     required this.revealed,
     required this.isFavorite,
     required this.isRecording,
+    required this.hasRecording,
     required this.onReveal,
     required this.onToggleAccent,
     required this.onPlayAccent,
     required this.onToggleFavorite,
     required this.onToggleRecord,
+    required this.onPlayback,
   });
 
   final Word word;
@@ -27,11 +29,19 @@ class WordCard extends StatelessWidget {
   final bool revealed;
   final bool isFavorite;
   final bool isRecording;
+
+  /// 当前词是否有已录音（可回放）。
+  final bool hasRecording;
   final VoidCallback onReveal;
   final ValueChanged<bool> onToggleAccent;
   final ValueChanged<bool> onPlayAccent;
   final VoidCallback onToggleFavorite;
+
+  /// 跟读录制开始/停止。
   final VoidCallback onToggleRecord;
+
+  /// 回放已录的跟读。
+  final VoidCallback onPlayback;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +87,7 @@ class WordCard extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.lg),
-        _recordButton(),
+        _shadowRow(),
         const SizedBox(height: AppSpacing.lg),
         _meaning(),
         const SizedBox(height: AppSpacing.lg),
@@ -128,33 +138,59 @@ class WordCard extends StatelessWidget {
   }
 
   /// 跟读：圆形麦克风按钮 + 独立文本（设计稿：icon 与文本分开）。录音中转暖色。
-  Widget _recordButton() {
-    final active = isRecording;
+  /// 跟读控制排：跟读(录制) + 播放跟读(回放)，圆形图标 + 底部文字（对齐播放页样式）。
+  Widget _shadowRow() {
+    return Row(
+      children: [
+        _shadowBtn(
+          icon: isRecording ? Icons.stop_rounded : Icons.mic,
+          label: '跟读',
+          active: isRecording,
+          onTap: onToggleRecord,
+        ),
+        const SizedBox(width: AppSpacing.xxl),
+        _shadowBtn(
+          icon: Icons.play_arrow_rounded,
+          label: '播放跟读',
+          enabled: hasRecording,
+          onTap: onPlayback,
+        ),
+      ],
+    );
+  }
+
+  Widget _shadowBtn({
+    required IconData icon,
+    required String label,
+    bool active = false,
+    bool enabled = true,
+    required VoidCallback onTap,
+  }) {
+    final Color bg = active
+        ? AppColors.warning
+        : (enabled ? AppColors.primaryTint : AppColors.border);
+    final Color fg = active
+        ? Colors.white
+        : (enabled ? AppColors.primaryDeep : AppColors.textMuted);
     return GestureDetector(
-      onTap: onToggleRecord,
+      onTap: enabled ? onTap : null,
       behavior: HitTestBehavior.opaque,
-      child: Row(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: active ? AppColors.warning : AppColors.primaryTint,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(active ? Icons.stop : Icons.mic,
-                size: 20,
-                color: active ? Colors.white : AppColors.primaryDeep),
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+            child: Icon(icon, size: 22, color: fg),
           ),
-          const SizedBox(width: AppSpacing.md),
-          Text(
-            active ? '录音中·点击停止' : '跟读',
-            style: AppTypography.body.copyWith(
-              color: active ? AppColors.warning : AppColors.textPrimary,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(label,
+              style: AppTypography.caption.copyWith(
+                color: (enabled || active)
+                    ? AppColors.textSecondary
+                    : AppColors.textMuted,
+              )),
         ],
       ),
     );
